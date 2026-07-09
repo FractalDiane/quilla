@@ -4,7 +4,6 @@ use std::fs::read;
 
 use bson::Document;
 
-mod quilla;
 use quilla::quilla_story::QuillaStory;
 
 fn main() {

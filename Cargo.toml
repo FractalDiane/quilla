@@ -3,6 +3,10 @@ name = "quilla"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "quilla"
+path = "src/quilla/lib.rs"
+
 [[bin]]
 name = "compiler"
 path = "src/compiler.rs"

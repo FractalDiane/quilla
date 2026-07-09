@@ -1,6 +1,5 @@
 use std::env::args;
 
-mod quilla;
 use quilla::quilla_compiler::compile_story_to_file;
 
 fn main() {

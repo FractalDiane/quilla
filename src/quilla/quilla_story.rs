@@ -2,7 +2,7 @@ use std::{collections::HashMap};
 
 use bson::{Bson, Document};
 
-use crate::quilla::variant::Variant;
+use crate::variant::Variant;
 
 enum AuxIndex {
 	None,
