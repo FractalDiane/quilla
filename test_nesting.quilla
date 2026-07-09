@@ -1,0 +1,15 @@
+Tell us a tale, Captain!
++ Yes
+	Very well, you sea-dogs. Here's a tale...
+	++ Continue
+		It was a dark and stormy night...
+		+++ Continue
+			...and the crew were restless...
+			++++ Continue
+				...and they said to their Captain...
+				+++++ Continue
+					...Tell us a tale, Captain!
++ No
+	No. It's past your bed-time.
+
+To a man, the crew began to yawn.

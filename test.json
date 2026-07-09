@@ -1,0 +1,119 @@
+{
+"data": [
+	{
+		"type": "var",
+		"name": "green",
+		"value": "false"
+	},
+	{
+		"type": "dialogue",
+		"text": "Susie: * HEY!! * THIS IS A TEST!"
+	},
+	{
+		"type": "dialogue",
+		"text": "Noelle: * Wh-why are you yelling?"
+	},
+	{
+		"type": "dialogue",
+		"text": "Susie: * 'Cause it's fun."
+	},
+	{
+		"type": "dialogue",
+		"text": "Noelle: * O-oh..."
+	},
+	{
+		"type": "dialogue",
+		"text": "Susie: * Hey, Kris. * What's your favorite color?"
+	},
+	{
+		"type": "choice",
+		"choices": ["Red", "Blue", "Purple", "Chartreuse"],
+		"results": [
+			[
+				{
+					"type": "dialogue",
+					"text": "Susie: * Okay, okay. I approve. * Red is good."
+				}
+			],
+			[
+				{
+					"type": "dialogue",
+					"text": "Susie: * Okay, okay. I approve. * Blue is good."
+				}
+			],
+			[
+				{
+					"type": "dialogue",
+					"text": "Susie: * HELL yeah! Purple kicks ass!"
+				},
+				{
+					"type": "dialogue",
+					"text": "Susie: * Not biased. At all."
+				},
+				{
+					"type": "dialogue",
+					"text": "Noelle: * How do you feel about green, Kris?"
+				},
+				{
+					"type": "choice",
+					"choices": ["Approve", "Unapprove"],
+					"results": [
+						[
+							{
+								"type": "dialogue",
+								"text": "Noelle: * Yeah! * It's good, right?"
+							},
+							{
+								"type": "dialogue",
+								"text": "Susie: * It's okay."
+							}
+						],
+						[
+							{
+								"type": "dialogue",
+								"text": "Noelle: * Oh, come on!"
+							},
+							{
+								"type": "dialogue",
+								"text": "Susie: * Green is not a creative color."
+							},
+							{
+								"type": "dialogue",
+								"text": "Noelle: * Wh-"
+							},
+							{
+								"type": "dialogue",
+								"text": "Susie: * Uh... forget I said anything."
+							}
+						]
+					]
+				}
+			],
+			[
+				{
+					"type": "dialogue",
+					"text": "Susie: * ..."
+				},
+				{
+					"type": "dialogue",
+					"text": "Susie: * You are literally the only person who would say that, Kris."
+				}
+			]
+		]
+	},
+	{
+		"type": "if",
+		"condition": "green",
+		"if": [
+			{
+				"type": "dialogue",
+				"text": "Susie: * Well, I'm glad we had this conversation."
+			}
+		]
+	},
+	{
+		"type": "dialogue",
+		"text": "Noelle: * Mhm!"
+	}
+]
+}

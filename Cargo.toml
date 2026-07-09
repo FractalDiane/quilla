@@ -1,0 +1,16 @@
+[package]
+name = "quilla"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "compiler"
+path = "src/quilla_compiler.rs"
+
+[[bin]]
+name = "runner"
+path = "src/quilla_runner.rs"
+
+[dependencies]
+bson = { version ="3.1.0", features = ["serde"] }
+serde = { version = "1.0.228", features = ["derive"] }

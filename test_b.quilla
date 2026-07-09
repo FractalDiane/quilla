@@ -1,0 +1,29 @@
+@VAR green = false
+
+Susie: * HEY!! * THIS IS A TEST!
+Noelle: * Wh-why are you yelling?
+Susie: * 'Cause it's fun.
+Noelle: * O-oh...
+Susie: * Hey, Kris. * What's your favorite color?
++ Red
+	Susie: * Okay, okay. I approve. * Red is good.
++ Blue
+	Susie: * Okay, okay. I approve. * Blue is good.
++ Purple
+	Susie: * HELL yes! * Purple kicks ass!
+	Susie: * Not biased. At all.
+	@SET green = true
+	Noelle: * How do you feel about green, Kris?
+	++ Approve
+		Noelle: * Yeah! * It's good, right?
+		Susie: * It's okay.
+	++ Unapprove
+		Noelle: * Oh, come on!
+		Susie: * Green is not a creative color.
+		Noelle: * Wh-
+		Susie: * Uh... forget I said anything.
++ Chartreuse
+	Susie: * ...
+	Susie: * You are literally the only person who would say that, Kris.
+
+Noelle: * Mhm!
