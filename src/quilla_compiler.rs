@@ -132,8 +132,7 @@ fn main() {
 			}
 		} else if line_split[0].starts_with('+') {
 			let choice = line_split[1..].join(" ");
-			let depth = line_split[0].len();
-			if depth > choices_stack.len() {
+			if indent_level + 1 > choices_stack.len() {
 				choices_stack.push(ContainerEntry::Choice(vec![(choice, vec![])]));
 			} else {
 				choices_stack.last_mut().unwrap().add_entry((choice, vec![]));
