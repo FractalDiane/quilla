@@ -1,11 +1,7 @@
-use std::env::args;
 use std::io::{BufRead, BufReader, Write};
 use std::fs::File;
 
 use bson::{Bson, Document, doc};
-
-mod quilla_story;
-mod variant;
 
 enum ContainerEntry {
 	Choice(Vec<(String, Vec<Document>)>),
@@ -24,17 +20,6 @@ impl ContainerEntry {
 		}
 	}
 
-	/*pub fn add_item(&mut self, item: Document) {
-		match self {
-			ContainerEntry::Choice(choices) => {
-				choices.last_mut().unwrap().1.push(item);
-			},
-			ContainerEntry::If(branches, _) => {
-				branches.last_mut().unwrap().1.push(item);
-			},
-		}
-	}*/
-
 	pub fn get_item_array(&mut self) -> &mut Vec<Document> {
 		match self {
 			ContainerEntry::Choice(choices) => {
@@ -47,13 +32,10 @@ impl ContainerEntry {
 	}
 }
 
-fn main() {
-	let filename = args().nth(1).unwrap();
-	//let filename = "test_nesting.quilla";
-	let file = BufReader::new(File::open(&filename).unwrap());
+pub fn compile_story_to_file(path: &String) -> Result<(), &str> {
+	let file = BufReader::new(File::open(&path).unwrap());
 
 	let mut story = Vec::<Document>::new();
-	//let mut choices_stack = Vec::<Vec<(String, Vec<Document>)>>::new();
 	let mut choices_stack = Vec::<ContainerEntry>::new();
 
 	for line_result in file.lines() {
@@ -98,7 +80,6 @@ fn main() {
 		let target_array = if choices_stack.is_empty() {
 			&mut story
 		} else {
-			//&mut choices_stack.last_mut().unwrap().last_mut().unwrap().1
 			choices_stack.last_mut().unwrap().get_item_array()
 		};
 
@@ -124,7 +105,6 @@ fn main() {
 						"type": "if",
 						"condition": line_split[1..].join(" "),
 					});
-					//let condition = line_split[1..].join(" ");
 				},
 				_ => {
 
@@ -152,6 +132,8 @@ fn main() {
 	println!("{}", story_doc);
 
 	let out_vec = story_doc.to_vec().unwrap();
-	let mut outfile = File::create(filename.replace(".quilla", ".bson")).unwrap();
+	let mut outfile = File::create(path.replace(".quilla", ".bson")).unwrap();
 	outfile.write(&out_vec).unwrap();
+
+	Ok(())
 }

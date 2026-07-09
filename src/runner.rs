@@ -4,13 +4,12 @@ use std::fs::read;
 
 use bson::Document;
 
-mod quilla_story;
-mod variant;
-use crate::quilla_story::QuillaStory;
+mod quilla;
+use quilla::quilla_story::QuillaStory;
 
 fn main() {
-	//let filename = args().nth(1).unwrap();
-	let filename = "test_b.bson";
+	let filename = args().nth(1).unwrap();
+	//let filename = "test_b.bson";
 	let file_bytes = read(filename).unwrap();
 	let cursor = Cursor::new(file_bytes);
 	
