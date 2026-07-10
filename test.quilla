@@ -1,5 +1,8 @@
 @SET green = false
 
+@set testyer = double(5)
+@do testy()
+
 Susie: * HEY!! * THIS IS A TEST!
 Noelle: * Wh-why are you yelling?
 Susie: * 'Cause it's fun.

@@ -87,15 +87,21 @@ pub fn compile_story_to_struct(path: &str) -> Result<CompiledStory, &str> {
 
 		if line_split[0].starts_with('@') {
 			let keyword = &line_split[0][1..];
-			match keyword {
-				"SET" => {
+			match keyword.to_lowercase().as_str() {
+				"set" => {
 					target_array.push(doc!{
 						"type": "set",
 						"name": line_split[1],
 						"value": line_split[3],
 					}.into());
 				},
-				"IF" => {
+				"do" => {
+					target_array.push(doc!{
+						"type": "do",
+						"what": line_split[1..].join(" "),
+					}.into());
+				},
+				"if" => {
 					let condition = line_split[1..].join(" ");
 					if indent_level + 1 > choices_stack.len() {
 						choices_stack.push(ContainerEntry::If(vec![(condition, vec![])]));

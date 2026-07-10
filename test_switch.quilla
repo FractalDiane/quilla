@@ -1,0 +1,8 @@
+@SET var = 20
+
+@SWITCH var
++ 10
++ 20
++ 30
++ else
+

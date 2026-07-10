@@ -2,7 +2,7 @@ use std::io::Cursor;
 use std::fs::read;
 
 use bson::{Bson, Document};
-use evalexpr::{Context, ContextWithMutableVariables, EvalexprError, HashMapContext};
+use evalexpr::{Context, ContextWithMutableFunctions, ContextWithMutableVariables, DefaultNumericTypes, EvalexprError, HashMapContext};
 use serde::{Deserialize, Serialize};
 
 use crate::quilla_compiler::compile_story_to_struct;
@@ -91,6 +91,10 @@ impl QuillaStory {
 						let value_str = current_node.get_str("value").unwrap();
 						evalexpr::eval_empty_with_context_mut(&format!("{} = {}", name, value_str), &mut self.variables).unwrap();
 					},
+					"do" => {
+						let what = current_node.get_str("what").unwrap();
+						evalexpr::eval_empty_with_context(what, &self.variables).unwrap();
+					},
 					"if" => {
 						let conditions = current_node.get_array("conditions").unwrap();
 						let mut selected_index = usize::MAX;
@@ -153,6 +157,10 @@ impl QuillaStory {
 
 	pub fn set_variable(&mut self, name: &str, value: evalexpr::Value) -> Result<(), EvalexprError> {
 		self.variables.set_value(name.into(), value)
+	}
+
+	pub fn register_function(&mut self, name: &str, function: evalexpr::Function<DefaultNumericTypes>) -> Result<(), EvalexprError> {
+		self.variables.set_function(name.into(), function)
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
