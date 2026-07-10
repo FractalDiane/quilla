@@ -1,4 +1,4 @@
-@VAR green = false
+@SET green = false
 
 Susie: * HEY!! * THIS IS A TEST!
 Noelle: * Wh-why are you yelling?

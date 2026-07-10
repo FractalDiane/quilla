@@ -7,7 +7,7 @@ use crate::quilla_story::CompiledStory;
 
 enum ContainerEntry {
 	Choice(Vec<(String, Vec<Bson>)>),
-	If(Vec<(String, Vec<Bson>)>, Vec<Bson>),
+	If(Vec<(String, Vec<Bson>)>),
 }
 
 impl ContainerEntry {
@@ -16,7 +16,7 @@ impl ContainerEntry {
 			ContainerEntry::Choice(choices) => {
 				choices.push(entry);
 			},
-			ContainerEntry::If(branches, _) => {
+			ContainerEntry::If(branches) => {
 				branches.push(entry);
 			},
 		}
@@ -27,7 +27,7 @@ impl ContainerEntry {
 			ContainerEntry::Choice(choices) => {
 				&mut choices.last_mut().unwrap().1
 			},
-			ContainerEntry::If(branches, _) => {
+			ContainerEntry::If(branches) => {
 				&mut branches.last_mut().unwrap().1
 			},
 		}
@@ -67,7 +67,7 @@ pub fn compile_story_to_struct(path: &str) -> Result<CompiledStory, &str> {
 								"results": choices.iter().map(|ch| ch.1.clone()).collect::<Vec<Vec<Bson>>>(),
 							}.into());
 						},
-						ContainerEntry::If(branches, _) => {
+						ContainerEntry::If(branches) => {
 							target_array.push(doc!{
 								"type": "if",
 								"conditions": branches.iter().map(|ch| ch.0.clone()).collect::<Vec<String>>(),
@@ -88,13 +88,6 @@ pub fn compile_story_to_struct(path: &str) -> Result<CompiledStory, &str> {
 		if line_split[0].starts_with('@') {
 			let keyword = &line_split[0][1..];
 			match keyword {
-				"VAR" => {
-					target_array.push(doc!{
-						"type": "var",
-						"name": line_split[1],
-						"value": line_split[3],
-					}.into());
-				},
 				"SET" => {
 					target_array.push(doc!{
 						"type": "set",
@@ -103,10 +96,12 @@ pub fn compile_story_to_struct(path: &str) -> Result<CompiledStory, &str> {
 					}.into());
 				},
 				"IF" => {
-					target_array.push(doc!{
-						"type": "if",
-						"condition": line_split[1..].join(" "),
-					}.into());
+					let condition = line_split[1..].join(" ");
+					if indent_level + 1 > choices_stack.len() {
+						choices_stack.push(ContainerEntry::If(vec![(condition, vec![])]));
+					} else {
+						choices_stack.last_mut().unwrap().add_entry((condition, vec![]));
+					}
 				},
 				_ => {
 
@@ -126,6 +121,12 @@ pub fn compile_story_to_struct(path: &str) -> Result<CompiledStory, &str> {
 			}.into());
 		}
 	}
+
+	let story_doc = doc!{
+		"data": &story,
+	};
+	
+	println!("{}", story_doc);
 
 	let compiled_story = CompiledStory{story};
 	Ok(compiled_story)
