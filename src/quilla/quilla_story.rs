@@ -1,6 +1,7 @@
 use std::{collections::HashMap};
 
 use bson::{Bson, Document};
+use serde::{Deserialize, Serialize};
 
 use crate::variant::Variant;
 
@@ -15,18 +16,23 @@ struct NodeIndex {
 	aux_index: AuxIndex,
 }
 
-pub struct QuillaStory<'a> {
-	story: &'a Vec<Bson>,
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CompiledStory {
+	pub story: Vec<Bson>,
+}
+
+pub struct QuillaStory {
+	story: Vec<Bson>,
 	index_stack: Vec<NodeIndex>,
 
 	selected_choice: usize,
 	variables: HashMap<String, Variant>,
 }
 
-impl<'a> QuillaStory<'a> {
-	pub fn new(story_doc: &'a Document) -> Self {
+impl QuillaStory {
+	pub fn new(story: Vec<Bson>) -> Self {
 		QuillaStory {
-			story: story_doc.get_array("data").unwrap(),
+			story,
 			index_stack: vec![NodeIndex{index: 0, aux_index: AuxIndex::None}],
 			selected_choice: 0,
 			variables: HashMap::new(),
@@ -129,7 +135,7 @@ impl<'a> QuillaStory<'a> {
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	fn get_current_node(&self, nodes: &'a Vec<Bson>, indices: &[NodeIndex]) -> Option<(&Document, usize)> {
+	fn get_current_node<'a>(&'a self, nodes: &'a Vec<Bson>, indices: &[NodeIndex]) -> Option<(&'a Document, usize)> {
 		if indices.is_empty() || (*indices.last().unwrap()).index >= nodes.len() {
 			None
 		} else if indices.len() == 1 {

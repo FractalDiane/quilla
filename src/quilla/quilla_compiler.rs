@@ -1,15 +1,17 @@
 use std::io::{BufRead, BufReader, Write};
 use std::fs::File;
 
-use bson::{Bson, Document, doc};
+use bson::{Bson, doc};
+
+use crate::quilla_story::CompiledStory;
 
 enum ContainerEntry {
-	Choice(Vec<(String, Vec<Document>)>),
-	If(Vec<(String, Vec<Document>)>, Vec<Document>),
+	Choice(Vec<(String, Vec<Bson>)>),
+	If(Vec<(String, Vec<Bson>)>, Vec<Bson>),
 }
 
 impl ContainerEntry {
-	pub fn add_entry(&mut self, entry: (String, Vec<Document>)) {
+	pub fn add_entry(&mut self, entry: (String, Vec<Bson>)) {
 		match self {
 			ContainerEntry::Choice(choices) => {
 				choices.push(entry);
@@ -20,7 +22,7 @@ impl ContainerEntry {
 		}
 	}
 
-	pub fn get_item_array(&mut self) -> &mut Vec<Document> {
+	pub fn get_item_array(&mut self) -> &mut Vec<Bson> {
 		match self {
 			ContainerEntry::Choice(choices) => {
 				&mut choices.last_mut().unwrap().1
@@ -32,10 +34,10 @@ impl ContainerEntry {
 	}
 }
 
-pub fn compile_story_to_file(path: &String) -> Result<(), &str> {
+pub fn compile_story_to_struct(path: &str) -> Result<CompiledStory, &str> {
 	let file = BufReader::new(File::open(&path).unwrap());
 
-	let mut story = Vec::<Document>::new();
+	let mut story = Vec::<Bson>::new();
 	let mut choices_stack = Vec::<ContainerEntry>::new();
 
 	for line_result in file.lines() {
@@ -62,15 +64,15 @@ pub fn compile_story_to_file(path: &String) -> Result<(), &str> {
 							target_array.push(doc!{
 								"type": "choice",
 								"choices": choices.iter().map(|ch| ch.0.clone()).collect::<Vec<String>>(),
-								"results": choices.iter().map(|ch| ch.1.clone()).collect::<Vec<Vec<Document>>>(),
-							});
+								"results": choices.iter().map(|ch| ch.1.clone()).collect::<Vec<Vec<Bson>>>(),
+							}.into());
 						},
 						ContainerEntry::If(branches, _) => {
 							target_array.push(doc!{
 								"type": "if",
 								"conditions": branches.iter().map(|ch| ch.0.clone()).collect::<Vec<String>>(),
-								"branches": branches.iter().map(|ch| ch.1.clone()).collect::<Vec<Vec<Document>>>(),
-							});
+								"branches": branches.iter().map(|ch| ch.1.clone()).collect::<Vec<Vec<Bson>>>(),
+							}.into());
 						},
 					}
 				}
@@ -91,20 +93,20 @@ pub fn compile_story_to_file(path: &String) -> Result<(), &str> {
 						"type": "var",
 						"name": line_split[1],
 						"value": line_split[3],
-					});
+					}.into());
 				},
 				"SET" => {
 					target_array.push(doc!{
 						"type": "set",
 						"name": line_split[1],
 						"value": line_split[3],
-					});
+					}.into());
 				},
 				"IF" => {
 					target_array.push(doc!{
 						"type": "if",
 						"condition": line_split[1..].join(" "),
-					});
+					}.into());
 				},
 				_ => {
 
@@ -121,17 +123,17 @@ pub fn compile_story_to_file(path: &String) -> Result<(), &str> {
 			target_array.push(doc!{
 				"type": "text",
 				"text": line.trim(),
-			});
+			}.into());
 		}
 	}
 
-	let story_doc = doc!{
-		"data": story,
-	};
+	let compiled_story = CompiledStory{story};
+	Ok(compiled_story)
+}
 
-	println!("{}", story_doc);
-
-	let out_vec = story_doc.to_vec().unwrap();
+pub fn compile_story_to_file(path: &str) -> Result<(), &str> {
+	let compiled_story = compile_story_to_struct(path)?;
+	let out_vec = bson::serialize_to_vec(&compiled_story).unwrap();
 	let mut outfile = File::create(path.replace(".quilla", ".bson")).unwrap();
 	outfile.write(&out_vec).unwrap();
 
