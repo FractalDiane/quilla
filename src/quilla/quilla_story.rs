@@ -1,8 +1,10 @@
-use std::{collections::HashMap};
+use std::{collections::HashMap, io::Cursor};
+use std::fs::read;
 
 use bson::{Bson, Document};
 use serde::{Deserialize, Serialize};
 
+use crate::quilla_compiler::compile_story_to_struct;
 use crate::variant::Variant;
 
 enum AuxIndex {
@@ -37,6 +39,18 @@ impl QuillaStory {
 			selected_choice: 0,
 			variables: HashMap::new(),
 		}
+	}
+
+	pub fn from_file(filename: &str) -> Self {
+		let file_bytes = read(filename).unwrap();
+		let cursor = Cursor::new(file_bytes);
+		let story_data = bson::deserialize_from_reader::<_, CompiledStory>(cursor).unwrap();
+		QuillaStory::new(story_data.story)
+	}
+
+	pub fn from_uncompiled_file(filename: &str) -> Result<Self, &str> {
+		let compiled = compile_story_to_struct(filename)?;
+		Ok(QuillaStory::new(compiled.story))
 	}
 
 	pub fn can_continue(&self) -> bool {
