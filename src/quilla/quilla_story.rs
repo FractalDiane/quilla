@@ -19,17 +19,15 @@ pub struct QuillaStory<'a> {
 	story: &'a Vec<Bson>,
 	index_stack: Vec<NodeIndex>,
 
-	current_choices: Vec<String>,
 	selected_choice: usize,
 	variables: HashMap<String, Variant>,
 }
 
 impl<'a> QuillaStory<'a> {
-	pub fn new(story: &'a Vec<Bson>) -> Self {
+	pub fn new(story_doc: &'a Document) -> Self {
 		QuillaStory {
-			story,
+			story: story_doc.get_array("data").unwrap(),
 			index_stack: vec![NodeIndex{index: 0, aux_index: AuxIndex::None}],
-			current_choices: vec![],
 			selected_choice: 0,
 			variables: HashMap::new(),
 		}
@@ -104,8 +102,6 @@ impl<'a> QuillaStory<'a> {
 
 	pub fn get_current_choices(&self) -> Vec<String> {
 		if let Some((current_node, _)) = self.get_current_node(&self.story, &self.index_stack) {
-			//let empty = Bson::Array(vec![]);
-			//let choices = current_node.get("choices").unwrap_or(&empty).as_array().unwrap();
 			let empty = vec![];
 			let choices = current_node.get_array("choices").unwrap_or(&empty);
 			choices.iter().map(|ch| ch.as_str().unwrap().into()).collect()

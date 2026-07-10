@@ -12,10 +12,8 @@ fn main() {
 	let file_bytes = read(filename).unwrap();
 	let cursor = Cursor::new(file_bytes);
 	
-	let mut story_doc = Document::from_reader(cursor).unwrap();
-	let story = story_doc.get_array_mut("data").unwrap();
-
-	let mut story = QuillaStory::new(story);
+	let story_doc = Document::from_reader(cursor).unwrap();
+	let mut story = QuillaStory::new(&story_doc);
 	println!("{}", story.continue_story());
 	println!("{}", story.continue_story());
 	println!("{}", story.continue_story());
